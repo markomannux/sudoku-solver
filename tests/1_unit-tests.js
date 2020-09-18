@@ -31,23 +31,39 @@ suite('UnitTests', () => {
     test('Valid "1-9" characters', (done) => {
       const input = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-      // done();
+      input.map(input => {
+        assert.isTrue(Solver.validateCellInput(input))
+      })
+      done();
     });
 
     // Invalid characters or numbers are not accepted 
     // as valid input for the puzzle grid
     test('Invalid characters (anything other than "1-9") are not accepted', (done) => {
       const input = ['!', 'a', '/', '+', '-', '0', '10', 0, '.'];
-
-      // done();
+      input.map(input => {
+        assert.isFalse(Solver.validateCellInput(input))
+      })
+      done();
     });
   });
   
   suite('Function ____()', () => {
     test('Parses a valid puzzle string into an object', done => {
       const input = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
+      const parsed = Solver.parsePuzzle(input);
+
+      const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+      rows.forEach((row, i) => {
+        const expectedCols = Array.from(input.substring(i*9, ((i+1)*9)));
+
+        for (let col = 0; col < 9; col++) {
+          const element = parsed[row][col];
+          assert.equal(element, expectedCols[col])
+        }
+      })
       
-      // done();
+      done();
     });
     
     // Puzzles that are not 81 numbers/periods long show the message 
@@ -58,8 +74,14 @@ suite('UnitTests', () => {
       const longStr = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6...';
       const errorMsg = 'Error: Expected puzzle to be 81 characters long.';
       const errorDiv = document.getElementById('error-msg');
+
+      [shortStr, longStr].forEach(input => {
+        errorDiv.textContent = '';
+        Solver.parsePuzzle(input);
+        assert.equal(errorDiv.textContent, errorMsg);
+      })
       
-      // done();
+      done();
     });
   });
 
@@ -67,8 +89,8 @@ suite('UnitTests', () => {
     // Valid complete puzzles pass
     test('Valid puzzles pass', done => {
       const input = '769235418851496372432178956174569283395842761628713549283657194516924837947381625';
-
-      // done();
+      assert.isTrue(Solver.isPuzzleValid(input));
+      done();
     });
 
     // Invalid complete puzzles fail
